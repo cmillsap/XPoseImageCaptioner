@@ -16,19 +16,19 @@ def _(arg):
 # Add-on information variables
 addon_info = {
 	# add-on Name/identifier, internal for NVDA
-	"addon_name": "addonTemplate",
+	"addon_name": "imageCaptioner",
 	# Add-on summary, usually the user visible name of the addon.
 	# Translators: Summary for this add-on
 	# to be shown on installation and add-on information found in Add-ons Manager.
-	"addon_summary": _("Add-on user visible name"),
+	"addon_summary": _("Image Captioner"),
 	# Add-on description
 	# Translators: Long description to be shown for this add-on on add-on information from add-ons manager
-	"addon_description": _("""Description for the add-on.
-It can span multiple lines."""),
+	"addon_description": _("""Provides captions for selected images in Windows Explorer.
+	 Uses the BLIP neural network to generate these captions """),
 	# version
-	"addon_version": "x.y",
+	"addon_version": "0.3",
 	# Author(s)
-	"addon_author": "name <name@domain.com>",
+	"addon_author": "Christopher Millsap <christopher.millsap@outlook.com>",
 	# URL for the add-on documentation support
 	"addon_url": None,
 	# URL for the add-on repository where the source code can be found

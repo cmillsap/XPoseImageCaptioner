@@ -23,8 +23,7 @@ addon_info = {
 	"addon_summary": _("Image Captioner"),
 	# Add-on description
 	# Translators: Long description to be shown for this add-on on add-on information from add-ons manager
-	"addon_description": _("""Provides captions for selected images in Windows Explorer.
-	 Uses the BLIP neural network to generate these captions """),
+	"addon_description": _("""Provides captions for selected images in Windows Explorer. Uses the BLIP neural network to generate these captions """),
 	# version
 	"addon_version": "0.3",
 	# Author(s)

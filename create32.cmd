@@ -1,0 +1,2 @@
+set CONDA_FORCE_32BIT=1
+activate py27_32

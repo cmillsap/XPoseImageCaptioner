@@ -1,0 +1,29 @@
+{
+	"addonId": "imageCaptioner",
+	"displayName": "Image Captioner",
+	"URL": "",
+	"description": "Provides captions for selected images in Windows Explorer.\n\t Uses the BLIP neural network to generate these captions ",
+	"sha256": "4f72215deb58b3926a98f3f90f1cbc4ddd952b540acb467e81ad96bae7c2c4d7",
+	"homepage": null,
+	"addonVersionName": "0.3",
+	"addonVersionNumber": {
+		"major": 0,
+		"minor": 3,
+		"patch": 0
+	},
+	"minNVDAVersion": {
+		"major": 2022,
+		"minor": 1,
+		"patch": 0
+	},
+	"lastTestedVersion": {
+		"major": 2022,
+		"minor": 4,
+		"patch": 0
+	},
+	"channel": "stable",
+	"publisher": "",
+	"sourceURL": null,
+	"license": null,
+	"licenseURL": null
+}

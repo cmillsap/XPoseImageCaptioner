@@ -6,17 +6,15 @@
 import globalPluginHandler
 from scriptHandler import script
 import ui
-import versionInfo
 import api
 import mmap
-import struct 
-import time 
-import sys
+import struct
+import time
 import os
-import screenBitmap
 import wx 
 from comtypes.client import CreateObject as COMCreate
 import subprocess
+
 
 class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 
@@ -24,8 +22,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 	def script_captionPhotograph(self, gesture):
 		wx.InitAllImageHandlers()
 		filename = self.get_selected_file()
-		if (filename != False):
-			extension =filename[-4:].lower()
+		if (filename is not False):
+			extension = filename[-4:].lower()
 
 			theImg = wx.Image()
 			if (extension.endswith(self.image_extensions) == True):
@@ -61,13 +59,13 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			else: 
 				ui.message(f'{filename} is not a recognized image type')
 		else: 
-			#try to obtain information about the in-focus object
+			# try to obtain information about the in-focus object
 			currentObject = api.getFocusObject()
-			if (currentObject != None): 
+			if (currentObject is not None): 
 				name = currentObject._get_name()
 				roleName = currentObject._get_roleText()
 				# permits getting graphics coordinates from current object. 
-				currLocation = currentObject._get_treeInterceptor().currentFocusableNVDAObject.location
+				# currLocation = currentObject._get_treeInterceptor().currentFocusableNVDAObject.location
 				# theBitmap = screenBitmap.ScreenBitmap(384,384)
 				# buffer = theBitmap.captureImage(currLocation.left, currLocation.top,(currLocation.right - currLocation.left), (currLocation.bottom - currLocation.top))
 				# theImg = wx.Image(384,384,buffer)
@@ -80,17 +78,22 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 	def __init__(self):
 		super(GlobalPlugin, self).__init__()
 		self.commandSize = struct.calcsize(">iiiii")
-		self.commandMap = mmap.mmap(-1, self.commandSize+256, "BLIPCommand")
+		self.commandMap = mmap.mmap(-1, self.commandSize + 256, "BLIPCommand")
 		self.server_message_offset = 0 
 		self.client_message_offset = 1 
 		self.server_status_offset = 2
 		self.image_width_offset = 3 
 		self.image_height_offset = 4 
+		self.scratchpadPath = "C:\\Users\\chris\\AppData\\Roaming\\nvda\\scratchpad\\globalPlugins"
+		self.usingScratchpad = True
 		self.server_not_ready = 0 
 		self.server_ready = 40 
-		self.image_extensions = ("jpg", "jpeg","png","gif","bmp")
+		self.image_extensions = ("jpg", "jpeg", "png", "gif", "bmp")
 		currentWorkingDirectory = os.getcwd()
-		os.chdir(currentWorkingDirectory + "\\dist\\") 
+		if self.usingScratchpad: 
+			os.chdir(self.scratchpadPath + "\\dist\\")
+		else: 
+			os.chdir(currentWorkingDirectory + "\\dist\\") 
 		print(currentWorkingDirectory) 
 		startupinfo = subprocess.STARTUPINFO()
 		startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
@@ -98,21 +101,21 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		os.chdir(currentWorkingDirectory)
 
 	def terminate(self):
-		self.send_response_from_client(self.commandMap, 23) #shut down server if NVDA shuts down. 
+		self.send_response_from_client(self.commandMap, 23)  # shut down server if NVDA shuts down. 
 	
 	def await_response_from_client(self, map, validClientBytes): 
 		readVal = 0
-		foundValue = False; 
-		while(foundValue == False):
+		foundValue = False
+		while (foundValue is False):
 			time.sleep(0.01)
-			readVal=map[self.client_message_offset]
+			readVal = map[self.client_message_offset]
 			count = validClientBytes.count(readVal); 
 			if (count > 0): 
 				foundValue = True 
 				print(f'received {readVal}')
 				return readVal    
 	
-	def send_response_from_server(self, map,commandByte):
+	def send_response_from_server(self, map, commandByte):
 		map[self.server_message_offset] = commandByte 
 		print(f'sent {commandByte}')
 	
@@ -124,17 +127,18 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 
 	def await_response_from_server(self, map, commandByte): 
 		readVal = 0
-		while(readVal != commandByte):
+		while (readVal != commandByte):
 			time.sleep(0.01)
-			readVal=map[self.server_message_offset]
+			readVal = map[self.server_message_offset]
 		return readVal  
 
-	def send_response_from_client(self, map,commandByte):
+	def send_response_from_client(self, map, commandByte):
 		map[self.client_message_offset] = commandByte 
 		print(f'sent {commandByte}')
 
-	def get_selected_file_explorer(self,obj=None):
-		if obj is None: obj = api.getForegroundObject()
+	def get_selected_file_explorer(self, obj=None):
+		if obj is None: 
+			obj = api.getForegroundObject()
 		file_path = False
 		# We check if we are in the Windows Explorer.
 		if self.is_explorer(obj):
@@ -149,7 +153,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 						# Now that we have the current folder, we can explore the SelectedItems collection.
 						file_path = str(window.Document.FocusedItem.path)
 						break
-				else: # loop exhausted
+				else:  # loop exhausted
 					desktop = True
 			except:
 				try:
@@ -168,13 +172,15 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		return file_path
 	
 	def is_explorer(self, obj=None):
-		if obj is None: obj = api.getForegroundObject()
+		if obj is None: 
+			obj = api.getForegroundObject()
 		#return obj and (obj.role == api.controlTypes.Role.PANE or obj.role == api.controlTypes.Role.WINDOW) and obj.appModule.appName == "explorer"
 		return obj and obj.appModule and obj.appModule.appName and obj.appModule.appName == 'explorer'
 
 	def get_selected_file(self, obj=None):
 		file_path = False
-		if obj is None: obj = api.getForegroundObject()
+		if obj is None: 
+			obj = api.getForegroundObject()
 		file_path = self.get_selected_file_explorer(obj)
 		return file_path
 

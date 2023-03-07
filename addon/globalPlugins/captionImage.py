@@ -8,6 +8,7 @@ from scriptHandler import script
 import ui
 import api
 import mmap
+import globalVars
 import struct
 import time
 import os
@@ -85,15 +86,16 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		self.image_width_offset = 3 
 		self.image_height_offset = 4 
 		self.scratchpadPath = "C:\\Users\\chris\\AppData\\Roaming\\nvda\\scratchpad\\globalPlugins"
-		self.usingScratchpad = True
-		self.server_not_ready = 0 
+		self.usingScratchpad = False
+		self.addonPath = os.path.join(globalVars.appArgs.configPath, "addons\\\imageCaptioner\\globalPlugins")
+		self.server_not_ready = 0
 		self.server_ready = 40 
 		self.image_extensions = ("jpg", "jpeg", "png", "gif", "bmp")
 		currentWorkingDirectory = os.getcwd()
 		if self.usingScratchpad: 
 			os.chdir(self.scratchpadPath + "\\dist\\")
 		else: 
-			os.chdir(currentWorkingDirectory + "\\dist\\") 
+			os.chdir(self.addonPath + "\\dist\\")
 		print(currentWorkingDirectory) 
 		startupinfo = subprocess.STARTUPINFO()
 		startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW

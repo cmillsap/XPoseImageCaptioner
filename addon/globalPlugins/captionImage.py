@@ -99,7 +99,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		print(currentWorkingDirectory) 
 		startupinfo = subprocess.STARTUPINFO()
 		startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
-		self.server = subprocess.Popen("BLIPDemoMini.exe", startupinfo=startupinfo)
+		self.server = subprocess.Popen("CaptionServer.exe", startupinfo=startupinfo)
 		os.chdir(currentWorkingDirectory)
 
 	def terminate(self):

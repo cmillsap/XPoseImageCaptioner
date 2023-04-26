@@ -141,7 +141,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 
 	def send_response_from_client(self, map, commandByte):
 		map[self.client_message_offset] = commandByte 
-		print(f'sent {commandByte}')
+		log.info(f'sent {commandByte}')
 
 	def get_selected_file_explorer(self, obj=None):
 		if obj is None: 

@@ -3,7 +3,7 @@
 	"displayName": "Image Captioner",
 	"URL": "",
 	"description": "Provides captions for selected images in Windows Explorer. Uses the BLIP neural\n\t network to generate these captions ",
-	"sha256": "abb5b75af8265c2a4c18fad64f84528481939db45655c5614882006760330596",
+	"sha256": "935ad2392436ea9de0b4c1f92cc664bda1cf44c906c4d854d7287228c12f3d57",
 	"homepage": null,
 	"addonVersionName": "0.4",
 	"addonVersionNumber": {

@@ -13,6 +13,7 @@ import struct
 import time
 import os
 import wx 
+from logHandler import log
 from comtypes.client import CreateObject as COMCreate
 import subprocess
 
@@ -40,7 +41,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				time.sleep(0.1)
 				server_status = self.get_server_status(self.commandMap)
 				if (server_status == 0):
-					ui.message(f'AI Server is not yet loaded. ')
+					ui.message(f'Captioning Server is not yet loaded. ')
 				else: 
 					ui.message("Captioning, please wait...")
 					self.commandMap.seek(self.image_width_offset * 4) 
@@ -54,9 +55,10 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 					self.commandMap.seek(self.commandSize)
 					caption = self.commandMap.readline()
 					mm.close()
-					self.send_response_from_client(self.commandMap, 0) #client has no more traffic 
+					self.send_response_from_client(self.commandMap, 0)#client has no more traffic 
 					self.send_response_from_server(self.commandMap, 0)
-					ui.message(f'The image size is {width} by {height} and uses {len(imgBytes)} bytes of memory. Caption: {caption}')
+					log.info(f'The image size is {width} by {height} and uses {len(imgBytes)} bytes of memory. Caption: {caption}')
+					ui.browseableMessage(f"caption : {caption}", isHtml=False)
 			else: 
 				ui.message(f'{filename} is not a recognized image type')
 		else: 
@@ -93,17 +95,20 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		self.image_extensions = ("jpg", "jpeg", "png", "gif", "bmp")
 		currentWorkingDirectory = os.getcwd()
 		if self.usingScratchpad: 
-			os.chdir(self.scratchpadPath + "\\dist\\")
+			self.server_location = self.scratchpadPath + "\\dist\\"
 		else: 
-			os.chdir(self.addonPath + "\\dist\\")
-		print(currentWorkingDirectory) 
+			self.server_location = self.addonPath + "\\dist\\"
+		os.chdir(self.server_location)
+		log.info(f"launching Image Captioning Server at {self.server_location}") 
 		startupinfo = subprocess.STARTUPINFO()
 		startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
 		self.server = subprocess.Popen("CaptionServer.exe", startupinfo=startupinfo)
 		os.chdir(currentWorkingDirectory)
 
 	def terminate(self):
-		self.send_response_from_client(self.commandMap, 23)  # shut down server if NVDA shuts down. 
+		self.send_response_from_client(self.commandMap, 23) 
+		log.info("Image Captioning server shutting down. ")
+		# shut down server if NVDA shuts down. 
 	
 	def await_response_from_client(self, map, validClientBytes): 
 		readVal = 0
@@ -114,12 +119,12 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			count = validClientBytes.count(readVal); 
 			if (count > 0): 
 				foundValue = True 
-				print(f'received {readVal}')
+				log.info(f'received {readVal}')
 				return readVal    
 	
 	def send_response_from_server(self, map, commandByte):
 		map[self.server_message_offset] = commandByte 
-		print(f'sent {commandByte}')
+		log.info(f'sent {commandByte}')
 	
 	def set_server_status(self, map, statusValue): 
 		map[self.server_status_offset] = statusValue 

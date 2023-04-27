@@ -20,7 +20,7 @@ import subprocess
 
 class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 
-	@script(gesture="kb:NVDA+shift+v")
+	@script(gesture="kb:NVDA+x")
 	def script_captionPhotograph(self, gesture):
 		wx.InitAllImageHandlers()
 		filename = self.get_selected_file()
@@ -58,7 +58,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 					self.send_response_from_client(self.commandMap, 0)#client has no more traffic 
 					self.send_response_from_server(self.commandMap, 0)
 					log.info(f'The image size is {width} by {height} and uses {len(imgBytes)} bytes of memory. Caption: {caption}')
-					ui.browseableMessage(f"caption : {caption}", isHtml=False)
+					ui.browseableMessage(f"caption : {caption}", title=filename, isHtml=False)
 			else: 
 				ui.message(f'{filename} is not a recognized image type')
 		else: 

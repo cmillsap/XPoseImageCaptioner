@@ -89,7 +89,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		self.image_height_offset = 4 
 		self.scratchpadPath = "C:\\Users\\chris\\AppData\\Roaming\\nvda\\scratchpad\\globalPlugins"
 		self.usingScratchpad = False
-		self.addonPath = os.path.join(globalVars.appArgs.configPath, "addons\\\imageCaptioner\\globalPlugins")
+		self.addonPath = os.path.join(globalVars.appArgs.configPath, "addons\\\XPoseImage Captioner\\globalPlugins")
 		self.server_not_ready = 0
 		self.server_ready = 40 
 		self.image_extensions = ("jpg", "jpeg", "png", "gif", "bmp")

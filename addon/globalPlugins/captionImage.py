@@ -9,6 +9,8 @@ import ui
 import api
 import mmap
 import globalVars
+import urllib.request
+import shutil 
 import struct
 import time
 import os
@@ -41,7 +43,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				time.sleep(0.1)
 				server_status = self.get_server_status(self.commandMap)
 				if (server_status == 0):
-					ui.message(f'Captioning Server is not yet loaded. ')
+					ui.message('Captioning Server is not yet loaded. ')
 				else: 
 					ui.message("Captioning, please wait...")
 					self.commandMap.seek(self.image_width_offset * 4) 
@@ -55,6 +57,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 					self.commandMap.seek(self.commandSize)
 					caption = self.commandMap.readline()
 					mm.close()
+					caption = caption.decode("utf-8")
 					self.send_response_from_client(self.commandMap, 0)#client has no more traffic 
 					self.send_response_from_server(self.commandMap, 0)
 					log.info(f'The image size is {width} by {height} and uses {len(imgBytes)} bytes of memory. Caption: {caption}')
@@ -88,7 +91,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		self.image_width_offset = 3 
 		self.image_height_offset = 4 
 		self.scratchpadPath = "C:\\Users\\chris\\AppData\\Roaming\\nvda\\scratchpad\\globalPlugins"
-		self.usingScratchpad = False
+		self.usingScratchpad = True
 		self.addonPath = os.path.join(globalVars.appArgs.configPath, "addons\\\XPoseImage Captioner\\globalPlugins")
 		self.server_not_ready = 0
 		self.server_ready = 40 
@@ -105,6 +108,10 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		self.server = subprocess.Popen("CaptionServer.exe", startupinfo=startupinfo)
 		os.chdir(currentWorkingDirectory)
 
+	def getURLFile(self, url, outfile):
+		with urllib.request.urlopen(url) as response, open(outfile, 'wb') as out_file:
+			shutil.copyfileobj(response, out_file)
+	
 	def terminate(self):
 		self.send_response_from_client(self.commandMap, 23) 
 		log.info("Image Captioning server shutting down. ")

@@ -2,6 +2,7 @@ addon/doc/*.css
 addon/doc/en/
 addon/globalPlugins/dist/
 env/
+olddist/
 *_docHandler.py
 *.html
 *.ini

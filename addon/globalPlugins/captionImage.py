@@ -17,6 +17,8 @@ import os
 import wx 
 from logHandler import log
 from comtypes.client import CreateObject as COMCreate
+from comtypes.gen.ISimpleDOM import ISimpleDOMDocument
+import controlTypes
 import subprocess
 
 
@@ -27,46 +29,10 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		wx.InitAllImageHandlers()
 		filename = self.get_selected_file()
 		if (filename is not False):
-			extension = filename[-4:].lower()
-
-			theImg = wx.Image()
-			if (extension.endswith(self.image_extensions) == True):
-				try:
-					theImg = wx.Image(filename)
-				except: 
-					ui.message("Image file could not be read. ")
-					return 
-				imgData = theImg.GetData()
-				imgBytes = bytes(imgData)
-				width = theImg.GetWidth()
-				height = theImg.GetHeight()
-				time.sleep(0.1)
-				server_status = self.get_server_status(self.commandMap)
-				if (server_status == 0):
-					ui.message('Captioning Server is not yet loaded. ')
-				else: 
-					ui.message("Captioning, please wait...")
-					self.commandMap.seek(self.image_width_offset * 4) 
-					self.commandMap.write(width.to_bytes(4, byteorder='big')) 
-					self.commandMap.write(height.to_bytes(4, byteorder='big'))
-					mm = mmap.mmap(-1, len(imgBytes) + 4, "BLIPImage")
-					mm.write(imgBytes)
-					mm.flush()
-					self.send_response_from_client(self.commandMap, 77) #all image information is available 
-					self.await_response_from_server(self.commandMap, 78) #captioning complete
-					self.commandMap.seek(self.commandSize)
-					caption = self.commandMap.readline()
-					mm.close()
-					caption = caption.decode("utf-8")
-					self.send_response_from_client(self.commandMap, 0)#client has no more traffic 
-					self.send_response_from_server(self.commandMap, 0)
-					log.info(f'The image size is {width} by {height} and uses {len(imgBytes)} bytes of memory. Caption: {caption}')
-					ui.browseableMessage(f"caption : {caption}", title=filename, isHtml=False)
-			else: 
-				ui.message(f'{filename} is not a recognized image type')
+			self.captionImage(filename)
 		else: 
 			# try to obtain information about the in-focus object
-			currentObject = api.getFocusObject()
+			currentObject = api.getNavigatorObject()
 			if (currentObject is not None): 
 				name = currentObject._get_name()
 				roleName = currentObject._get_roleText()
@@ -79,8 +45,26 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				# print(f'currentObject location  {currLocation.left} {currLocation.top} {currLocation.right} {currLocation.bottom}')
 				# print(f'{dir(buffer)}')
 				ui.message(f'Not explorer, name is {name} with role {roleName}')
+				log.info(f'Not explorer, name is {name} with role {roleName}')
+				log.info(f'object details {currentObject}')
+				finalAttributes = currentObject._get_IA2Attributes()
+				if 'tag' in finalAttributes:
+					if 'src' in finalAttributes: 
+						imagefilename = finalAttributes['src']
+						log.info(f'image name is {imagefilename}')
+						url = self.get_URL_from_object(currentObject)
+						log.info(f'URL for site is {url}')
+					else: 
+						log.info('src property not present. Probably firefox')
+				else:
+					log.info('img property not present. ')
 			ui.message("No image selected. ")
 
+	@script(gesture="kb:NVDA+a")
+	def script_logObject(self, gesture):
+		focusObj = api.getFocusObject()
+		log.info("Selected Object is here. ")		
+	
 	def __init__(self):
 		super(GlobalPlugin, self).__init__()
 		self.commandSize = struct.calcsize(">iiiii")
@@ -107,7 +91,47 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
 		self.server = subprocess.Popen("CaptionServer.exe", startupinfo=startupinfo)
 		os.chdir(currentWorkingDirectory)
+		self.getURLFile('https://media.cnn.com/api/v1/images/stellar/prod/230523132442-15-debt-ceiling.jpg?c=16x9&q=h_720,w_1280,c_fill','c:\\Tests\\result7.jpg')
 
+	def captionImage(self, imgFileName): 
+		theImg = wx.Image()
+		extension = imgFileName[-4:].lower()
+		if (extension.endswith(self.image_extensions) == True):
+			try:
+				theImg = wx.Image(imgFileName)
+			except: 
+				ui.message("Image file could not be read. ")
+				return 
+			imgData = theImg.GetData()
+			imgBytes = bytes(imgData)
+			width = theImg.GetWidth()
+			height = theImg.GetHeight()
+			time.sleep(0.1)
+			server_status = self.get_server_status(self.commandMap)
+			if (server_status == 0):
+				ui.message('Captioning Server is not yet loaded. ')
+			else: 
+				ui.message("Captioning, please wait...")
+				self.commandMap.seek(self.image_width_offset * 4) 
+				self.commandMap.write(width.to_bytes(4, byteorder='big')) 
+				self.commandMap.write(height.to_bytes(4, byteorder='big'))
+				mm = mmap.mmap(-1, len(imgBytes) + 4, "BLIPImage")
+				mm.write(imgBytes)
+				mm.flush()
+				self.send_response_from_client(self.commandMap, 77) #all image information is available 
+				self.await_response_from_server(self.commandMap, 78) #captioning complete
+				self.commandMap.seek(self.commandSize)
+				caption = self.commandMap.readline()
+				mm.close()
+				caption = caption.decode("utf-8")
+				self.send_response_from_client(self.commandMap, 0)#client has no more traffic 
+				self.send_response_from_server(self.commandMap, 0)
+				log.info(f'The image size is {width} by {height} and uses {len(imgBytes)} bytes of memory. Caption: {caption}')
+				ui.browseableMessage(f"caption : {caption}", title='Captioned image', isHtml=False)
+		else: 
+			ui.message(f'{imgFileName} is not a recognized image type')
+		
+	
 	def getURLFile(self, url, outfile):
 		with urllib.request.urlopen(url) as response, open(outfile, 'wb') as out_file:
 			shutil.copyfileobj(response, out_file)
@@ -216,3 +240,15 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		except:
 			pass
 		return False
+	
+	def get_URL_from_object(self, startObject):
+		searchObject = startObject 
+		while searchObject.role != controlTypes.Role.DOCUMENT:
+			searchObject = searchObject.parent
+		try:
+			doc =searchObject.IAccessibleObject.QueryInterface(ISimpleDOMDocument)
+			return doc.URL
+		except:
+			return ""
+
+

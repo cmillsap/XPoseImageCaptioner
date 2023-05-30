@@ -10,6 +10,7 @@ import api
 import mmap
 import globalVars
 import urllib.request
+from urllib.parse import urlparse 
 import shutil 
 import struct
 import time
@@ -52,13 +53,27 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 					if 'src' in finalAttributes: 
 						imagefilename = finalAttributes['src']
 						log.info(f'image name is {imagefilename}')
+						urlComponents = urlparse(imagefilename)
+						urlImgFile = urlComponents.path 
+						extension = urlImgFile[-4:].lower()
+						if (extension.endswith(self.image_extensions) == True):
+							# valid image. see if image captioning is possible. 
+							if (urlComponents.netloc != ""): 
+								# url contains full text so not relative. Load and send to cpationing 
+								self.getURLFile(imagefilename,'c:\\Tests\\result7.jpg')
+								self.captionImage('c:\\Tests\\result7.jpg')
+							else:
+								log.info('need to get source url to caption image.')
+						else:
+							log.info('invalid extension')
+						log.info(f'{urlComponents.netloc} {urlComponents.path}')
 						url = self.get_URL_from_object(currentObject)
 						log.info(f'URL for site is {url}')
 					else: 
 						log.info('src property not present. Probably firefox')
 				else:
 					log.info('img property not present. ')
-			ui.message("No image selected. ")
+			
 
 	@script(gesture="kb:NVDA+a")
 	def script_logObject(self, gesture):
@@ -91,7 +106,6 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
 		self.server = subprocess.Popen("CaptionServer.exe", startupinfo=startupinfo)
 		os.chdir(currentWorkingDirectory)
-		self.getURLFile('https://media.cnn.com/api/v1/images/stellar/prod/230523132442-15-debt-ceiling.jpg?c=16x9&q=h_720,w_1280,c_fill','c:\\Tests\\result7.jpg')
 
 	def captionImage(self, imgFileName): 
 		theImg = wx.Image()

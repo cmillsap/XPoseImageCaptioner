@@ -14,6 +14,7 @@ from urllib.parse import urlparse
 import shutil 
 import struct
 import time
+import tempfile
 import os
 import wx 
 from logHandler import log
@@ -30,7 +31,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		wx.InitAllImageHandlers()
 		filename = self.get_selected_file()
 		if (filename is not False):
-			self.captionImage(filename)
+			self.captionImageFile(filename)
 		else: 
 			# try to obtain information about the in-focus object
 			currentObject = api.getNavigatorObject()
@@ -60,8 +61,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 							# valid image. see if image captioning is possible. 
 							if (urlComponents.netloc != ""): 
 								# url contains full text so not relative. Load and send to cpationing 
-								self.getURLFile(imagefilename,'c:\\Tests\\result7.jpg')
-								self.captionImage('c:\\Tests\\result7.jpg')
+								self.captionImageURL(imagefilename)
 							else:
 								log.info('need to get source url to caption image.')
 						else:
@@ -107,48 +107,56 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		self.server = subprocess.Popen("CaptionServer.exe", startupinfo=startupinfo)
 		os.chdir(currentWorkingDirectory)
 
-	def captionImage(self, imgFileName): 
+	def captionImageFile(self, imgFileName): 
 		theImg = wx.Image()
 		extension = imgFileName[-4:].lower()
 		if (extension.endswith(self.image_extensions) == True):
 			try:
 				theImg = wx.Image(imgFileName)
+				self.captionImage(theImg)
 			except: 
 				ui.message("Image file could not be read. ")
 				return 
-			imgData = theImg.GetData()
-			imgBytes = bytes(imgData)
-			width = theImg.GetWidth()
-			height = theImg.GetHeight()
-			time.sleep(0.1)
-			server_status = self.get_server_status(self.commandMap)
-			if (server_status == 0):
-				ui.message('Captioning Server is not yet loaded. ')
-			else: 
-				ui.message("Captioning, please wait...")
-				self.commandMap.seek(self.image_width_offset * 4) 
-				self.commandMap.write(width.to_bytes(4, byteorder='big')) 
-				self.commandMap.write(height.to_bytes(4, byteorder='big'))
-				mm = mmap.mmap(-1, len(imgBytes) + 4, "BLIPImage")
-				mm.write(imgBytes)
-				mm.flush()
-				self.send_response_from_client(self.commandMap, 77) #all image information is available 
-				self.await_response_from_server(self.commandMap, 78) #captioning complete
-				self.commandMap.seek(self.commandSize)
-				caption = self.commandMap.readline()
-				mm.close()
-				caption = caption.decode("utf-8")
-				self.send_response_from_client(self.commandMap, 0)#client has no more traffic 
-				self.send_response_from_server(self.commandMap, 0)
-				log.info(f'The image size is {width} by {height} and uses {len(imgBytes)} bytes of memory. Caption: {caption}')
-				ui.browseableMessage(f"caption : {caption}", title='Captioned image', isHtml=False)
 		else: 
 			ui.message(f'{imgFileName} is not a recognized image type')
 		
+	def captionImage(self, theImg): 
+		imgData = theImg.GetData()
+		imgBytes = bytes(imgData)
+		width = theImg.GetWidth()
+		height = theImg.GetHeight()
+		time.sleep(0.1)
+		server_status = self.get_server_status(self.commandMap)
+		if (server_status == 0):
+			ui.message('Captioning Server is not yet loaded. ')
+		else: 
+			ui.message("Captioning, please wait...")
+			self.commandMap.seek(self.image_width_offset * 4) 
+			self.commandMap.write(width.to_bytes(4, byteorder='big')) 
+			self.commandMap.write(height.to_bytes(4, byteorder='big'))
+			mm = mmap.mmap(-1, len(imgBytes) + 4, "BLIPImage")
+			mm.write(imgBytes)
+			mm.flush()
+			self.send_response_from_client(self.commandMap, 77) #all image information is available 
+			self.await_response_from_server(self.commandMap, 78) #captioning complete
+			self.commandMap.seek(self.commandSize)
+			caption = self.commandMap.readline()
+			mm.close()
+			caption = caption.decode("utf-8")
+			self.send_response_from_client(self.commandMap, 0)#client has no more traffic 
+			self.send_response_from_server(self.commandMap, 0)
+			log.info(f'The image size is {width} by {height} and uses {len(imgBytes)} bytes of memory. Caption: {caption}')
+			ui.browseableMessage(f"caption : {caption}", title='Captioned image', isHtml=False)
 	
-	def getURLFile(self, url, outfile):
-		with urllib.request.urlopen(url) as response, open(outfile, 'wb') as out_file:
-			shutil.copyfileobj(response, out_file)
+	def captionImageURL(self, url):
+		try:
+			with urllib.request.urlopen(url) as response,tempfile.TemporaryFile() as out_file:
+				theImg = wx.Image(out_file)
+				self.captionImage(theImg)
+		except: 
+			ui.message("Image file could not be read. ")
+			return 
+
 	
 	def terminate(self):
 		self.send_response_from_client(self.commandMap, 23) 

@@ -57,11 +57,16 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 						urlComponents = urlparse(imagefilename)
 						urlImgFile = urlComponents.path 
 						extension = urlImgFile[-4:].lower()
+						log.info(f'file name is {urlImgFile}')
+						serverpath, imgFile = os.path.split(urlImgFile)
+						log.info(f'simple file name is {imgFile}')
+						tempFile = tempfile.gettempdir() + '\\' + imgFile
+						log.info(f'temp file name is {tempFile}')
 						if (extension.endswith(self.image_extensions) == True):
 							# valid image. see if image captioning is possible. 
 							if (urlComponents.netloc != ""): 
 								# url contains full text so not relative. Load and send to cpationing 
-								self.captionImageURL(imagefilename)
+								self.captionImageURL(imagefilename, tempFile)
 							else:
 								log.info('need to get source url to caption image.')
 						else:
@@ -148,15 +153,16 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			log.info(f'The image size is {width} by {height} and uses {len(imgBytes)} bytes of memory. Caption: {caption}')
 			ui.browseableMessage(f"caption : {caption}", title='Captioned image', isHtml=False)
 	
-	def captionImageURL(self, url):
+	def captionImageURL(self, url, tempFileName):
 		try:
-			with urllib.request.urlopen(url) as response,tempfile.TemporaryFile() as out_file:
-				theImg = wx.Image(out_file)
-				self.captionImage(theImg)
+			with urllib.request.urlopen(url) as response:
+				with open(tempFileName, "wb") as f:
+					 # Copy the binary content of the response to the file
+					shutil.copyfileobj(response, f)
+			self.captionImageFile(tempFileName)
 		except: 
 			ui.message("Image file could not be read. ")
 			return 
-
 	
 	def terminate(self):
 		self.send_response_from_client(self.commandMap, 23) 

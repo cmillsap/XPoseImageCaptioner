@@ -68,7 +68,11 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 								# url contains full text so not relative. Load and send to cpationing 
 								self.captionImageURL(imagefilename, tempFile)
 							else:
-								log.info('need to get source url to caption image.')
+								documentURL = self.get_URL_from_object(currentObject)
+								documentURLComponents = urlparse(documentURL)
+								filePath = os.path.dirname(documentURLComponents.path) + urlComponents.path
+								newImgURL = documentURLComponents._replace(path=filePath).geturl()
+								self.captionImageURL(newImgURL, tempFile)				
 						else:
 							log.info('invalid extension')
 						log.info(f'{urlComponents.netloc} {urlComponents.path}')

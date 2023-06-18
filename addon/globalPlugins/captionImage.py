@@ -46,7 +46,6 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				# theImg.SaveFile("C:\\BLIPDemo\\testfromscr.bmp")
 				# print(f'currentObject location  {currLocation.left} {currLocation.top} {currLocation.right} {currLocation.bottom}')
 				# print(f'{dir(buffer)}')
-				ui.message(f'Not explorer, name is {name} with role {roleName}')
 				log.info(f'Not explorer, name is {name} with role {roleName}')
 				log.info(f'object details {currentObject}')
 				finalAttributes = currentObject._get_IA2Attributes()
@@ -55,34 +54,55 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 						imagefilename = finalAttributes['src']
 						log.info(f'image name is {imagefilename}')
 						urlComponents = urlparse(imagefilename)
-						urlImgFile = urlComponents.path 
-						extension = urlImgFile[-4:].lower()
-						log.info(f'file name is {urlImgFile}')
-						serverpath, imgFile = os.path.split(urlImgFile)
-						log.info(f'simple file name is {imgFile}')
-						tempFile = tempfile.gettempdir() + '\\' + imgFile
-						log.info(f'temp file name is {tempFile}')
-						if (extension.endswith(self.image_extensions) == True):
-							# valid image. see if image captioning is possible. 
-							if (urlComponents.netloc != ""): 
-								# url contains full text so not relative. Load and send to cpationing 
-								self.captionImageURL(imagefilename, tempFile)
-							else:
-								documentURL = self.get_URL_from_object(currentObject)
-								documentURLComponents = urlparse(documentURL)
-								filePath = os.path.dirname(documentURLComponents.path) + urlComponents.path
-								newImgURL = documentURLComponents._replace(path=filePath).geturl()
-								self.captionImageURL(newImgURL, tempFile)				
-						else:
-							log.info('invalid extension')
-						log.info(f'{urlComponents.netloc} {urlComponents.path}')
-						url = self.get_URL_from_object(currentObject)
-						log.info(f'URL for site is {url}')
+						if (urlComponents.netloc == ""):
+							navUrl = self.get_url_from_nav_object()
+							navUrlcomponents = urlparse(navUrl)
+							extension =  urlComponents.path[-4:].lower()
+							if (extension.endswith(self.image_extensions) == True):
+								finalUrl = navUrlcomponents._replace(path = urlComponents.path).geturl() 
+								log.info(f'final url = {finalUrl}')
+								tmpFile = self.getTempFileName(finalUrl)
+								self.captionImageURL(finalUrl, tmpFile)
+								return 
+							else: 
+								ui.message('Image file type is not readable. ')
+						else: 
+							urlImgFile = urlComponents.path 
+							extension = urlImgFile[-4:].lower()
+							log.info(f'file name is {urlImgFile}')
+							serverpath, imgFile = os.path.split(urlImgFile)
+							log.info(f'simple file name is {imgFile}')
+							tempFile = tempfile.gettempdir() + '\\' + imgFile
+							log.info(f'temp file name is {tempFile}')
+							if (extension.endswith(self.image_extensions) == True):
+								# valid image. see if image captioning is possible. 
+								if (urlComponents.netloc != ""): 
+									# url contains full text so not relative. Load and send to cpationing 
+									netloc = urlComponents.netloc
+									log.info(f'netloc = {netloc}')
+									log.info(f'image file name {imagefilename}')
+									self.captionImageURL(imagefilename, tempFile)
+									return 			
 					else: 
-						log.info('src property not present. Probably firefox')
+						for key, value in finalAttributes.items():
+							log.info(key+" "+ str(value))
+							url2 = self.get_url_from_nav_object()
+						log.info(f'src property not present. ALT tag in Firefox {url2}')
+						navObj = api.getNavigatorObject()
+
 				else:
 					log.info('img property not present. ')
 			
+    
+	def getTempFileName(self, imgUrl):
+		urlComponents = urlparse(imgUrl)
+		urlImgFile = urlComponents.path 
+		log.info(f'file name is {urlImgFile}')
+		serverpath, imgFile = os.path.split(urlImgFile)
+		log.info(f'simple file name is {imgFile}')
+		tempFile = tempfile.gettempdir() + '\\' + imgFile
+		return tempFile
+	  
 
 	@script(gesture="kb:NVDA+a")
 	def script_logObject(self, gesture):
@@ -166,6 +186,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			self.captionImageFile(tempFileName)
 		except: 
 			ui.message("Image file could not be read. ")
+			log.error(f"url = {url}")
 			return 
 	
 	def terminate(self):
@@ -282,5 +303,19 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			return doc.URL
 		except:
 			return ""
+		
+	def get_url_from_nav_object(self): 
+		URL = None 
+		obj = api.getNavigatorObject()
+		try:
+			URL = obj.treeInterceptor.documentConstantIdentifier
+			log.info("Masked  : " + URL)
+			URL = urllib.parse.unquote(URL)
+			log.info("Unmasked: " + URL)
+		except:
+			log.info("URL not found in get_url_from_nav_object")
+			return None 
+		return URL 
+
 
 

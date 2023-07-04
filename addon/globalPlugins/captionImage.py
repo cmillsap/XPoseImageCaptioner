@@ -18,6 +18,7 @@ import tempfile
 import os
 import wx 
 from logHandler import log
+import traceback
 from comtypes.client import CreateObject as COMCreate
 from comtypes.gen.ISimpleDOM import ISimpleDOMDocument
 import controlTypes
@@ -119,7 +120,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		self.image_width_offset = 3 
 		self.image_height_offset = 4 
 		self.scratchpadPath = "C:\\Users\\chris\\AppData\\Roaming\\nvda\\scratchpad\\globalPlugins"
-		self.usingScratchpad = True
+		self.usingScratchpad = False
 		self.addonPath = os.path.join(globalVars.appArgs.configPath, "addons\\\XPoseImage Captioner\\globalPlugins")
 		self.server_not_ready = 0
 		self.server_ready = 40 
@@ -179,14 +180,17 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 	
 	def captionImageURL(self, url, tempFileName):
 		try:
-			with urllib.request.urlopen(url) as response:
+			req = urllib.request.Request(url)
+			req.add_header('User-Agent', 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36')
+			with urllib.request.urlopen(req) as response:
 				with open(tempFileName, "wb") as f:
 					 # Copy the binary content of the response to the file
 					shutil.copyfileobj(response, f)
 			self.captionImageFile(tempFileName)
-		except: 
+		except Exception as e: 
 			ui.message("Image file could not be read. ")
-			log.error(f"url = {url}")
+			log.error(f"url = {url}. Exception = {e}")
+			traceback.print_exception(type(e), e, e.__traceback__)
 			return 
 	
 	def terminate(self):
@@ -316,6 +320,3 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			log.info("URL not found in get_url_from_nav_object")
 			return None 
 		return URL 
-
-
-

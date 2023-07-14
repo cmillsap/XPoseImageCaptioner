@@ -3,12 +3,12 @@
 	"displayName": "XPoseImage Captioner",
 	"URL": "",
 	"description": "Provides captions for selected images in Windows Explorer. Uses the BLIP neural\n\t network to generate these captions ",
-	"sha256": "dc1914c4be8fb4e829fc0b6635a27a808ea60461e0c8b95d1593077f920565e8",
+	"sha256": "acb9d42a5a27911ea7399c7990220206a8b24290520dbba2ba246b032006a0f3",
 	"homepage": null,
-	"addonVersionName": "0.6",
+	"addonVersionName": "0.7",
 	"addonVersionNumber": {
 		"major": 0,
-		"minor": 6,
+		"minor": 7,
 		"patch": 0
 	},
 	"minNVDAVersion": {

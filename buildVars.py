@@ -26,7 +26,7 @@ addon_info = {
 	"addon_description": _("""Provides captions for selected images in Windows Explorer. Uses the BLIP neural
 	 network to generate these captions """),
 	# version
-	"addon_version": "0.7",
+	"addon_version": "0.75",
 	# Author(s)
 	"addon_author": "Christopher Millsap <christopher.millsap@outlook.com>",
 	# URL for the add-on documentation support
@@ -57,7 +57,7 @@ addon_info = {
 # pythonSources = ["addon/globalPlugins/*.py"]
 # For more information on SCons Glob expressions please take a look at:
 # https://scons.org/doc/production/HTML/scons-user/apd.html
-pythonSources = ["addon/globalPlugins/*.py"]
+pythonSources = ["addon/*.py","addon/globalPlugins/*.py"]
 
 # Files that contain strings for translation. Usually your python sources
 i18nSources = pythonSources + ["buildVars.py"]

@@ -26,7 +26,7 @@ addon_info = {
 	"addon_description": _("""Provides captions for selected images in Windows Explorer. Uses the BLIP neural
 	 network to generate these captions """),
 	# version
-	"addon_version": "0.75",
+	"addon_version": "0.8",
 	# Author(s)
 	"addon_author": "Christopher Millsap <christopher.millsap@outlook.com>",
 	# URL for the add-on documentation support

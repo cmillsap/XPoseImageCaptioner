@@ -23,10 +23,10 @@ addon_info = {
 	"addon_summary": _("XPoseImage Captioner"),
 	# Add-on description
 	# Translators: Long description to be shown for this add-on on add-on information from add-ons manager
-	"addon_description": _("""Provides captions for selected images in Windows Explorer. Uses the BLIP neural
+	"addon_description": _("""Provides captions for selected images in Windows Explorer, Chrome, Edge, and FireFox. Uses the BLIP neural
 	 network to generate these captions """),
 	# version
-	"addon_version": "0.8",
+	"addon_version": "0.8.1",
 	# Author(s)
 	"addon_author": "Christopher Millsap <christopher.millsap@outlook.com>",
 	# URL for the add-on documentation support
@@ -44,7 +44,7 @@ addon_info = {
 	# Do not change unless you know what you are doing!
 	"addon_updateChannel": None,
 	# Add-on license such as GPL 2
-	"addon_license": None,
+	"addon_license": "BSD-3-Clause",
 	# URL for the license document the ad-on is licensed under
 	"addon_licenseURL": None,
 }

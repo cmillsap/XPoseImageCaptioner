@@ -22,5 +22,7 @@ __BLIP: Bootstrapping Language-Image Pre-training for Unified Vision-Language Un
 
 
 XPoseImageCaptioner &copy; 2023 Christopher Millsap, All Rights Reserved. Distributed under the **BSD 3 Clause License**
-BLIP &copy; 2023 SalesForce.com, All Rights Reserved. Distributed under the **BSD 3 Clause License**
+
+Uses the BLIP neural network and supporting code. &copy; 2023 SalesForce.com, All Rights Reserved. Distributed under the **BSD 3 Clause License**. 
+
 See License.txt for full details. 

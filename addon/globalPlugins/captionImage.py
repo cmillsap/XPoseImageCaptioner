@@ -39,14 +39,6 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			if (currentObject is not None): 
 				name = currentObject._get_name()
 				roleName = currentObject._get_roleText()
-				# permits getting graphics coordinates from current object. 
-				# currLocation = currentObject._get_treeInterceptor().currentFocusableNVDAObject.location
-				# theBitmap = screenBitmap.ScreenBitmap(384,384)
-				# buffer = theBitmap.captureImage(currLocation.left, currLocation.top,(currLocation.right - currLocation.left), (currLocation.bottom - currLocation.top))
-				# theImg = wx.Image(384,384,buffer)
-				# theImg.SaveFile("C:\\BLIPDemo\\testfromscr.bmp")
-				# print(f'currentObject location  {currLocation.left} {currLocation.top} {currLocation.right} {currLocation.bottom}')
-				# print(f'{dir(buffer)}')
 				log.info(f'Not explorer, name is {name} with role {roleName}')
 				log.info(f'object details {currentObject}')
 				finalAttributes = currentObject._get_IA2Attributes()
@@ -103,12 +95,6 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		log.info(f'simple file name is {imgFile}')
 		tempFile = tempfile.gettempdir() + '\\' + imgFile
 		return tempFile
-	  
-
-	@script(gesture="kb:NVDA+a")
-	def script_logObject(self, gesture):
-		focusObj = api.getFocusObject()
-		log.info("Selected Object is here. ")		
 	
 	def __init__(self):
 		super(GlobalPlugin, self).__init__()

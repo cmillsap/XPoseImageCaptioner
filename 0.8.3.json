@@ -3,13 +3,13 @@
 	"displayName": "XPoseImage Captioner",
 	"URL": "",
 	"description": "Provides captions for selected images in Windows Explorer, Chrome, Edge, and FireFox. Uses the BLIP neural\n\t network to generate these captions ",
-	"sha256": "4c92a2958e62693237a91de08a1af9d0dabb18bf768bb8cb4598a5d556ba8844",
+	"sha256": "5867fc06dea9040bba4758f481ce6329ec85f459267b2bd1f3e83fa14b6d0fa4",
 	"homepage": null,
-	"addonVersionName": "0.8.1",
+	"addonVersionName": "0.8.3",
 	"addonVersionNumber": {
 		"major": 0,
 		"minor": 8,
-		"patch": 1
+		"patch": 3
 	},
 	"minNVDAVersion": {
 		"major": 2022,

@@ -5,7 +5,7 @@ This addon allows for the AI captioning of JPEG and PNG images from Windows File
 Microsoft Edge, Google Chrome, and Firefox. 
 First, select an image with the navigation cursor, then press NVDA+x to activate the addon. The addon will say "Captioning, please wait" as the AI captions the image. Thia process will take from one to five seconds depending on your machine's CPU speed. A window will open after the AI completes the caption showing the text of the caption and the caption text will be read. You can dismiss the caption window by pressing Escape. 
 
-## Getting the most out of XPoseImageCaptioner
+## Getting the most out of XPoseImage Captioner
 There are several things to be aware of when using the XPoseImageCaptioner to get the best results: 
 
 1. AI captioning works best for photographs and cartoons or other artwork. It also can work fairly well for memes and ads. It does not work well for charts and is not a replacement for OCR. If you have an image of a text document, use an OCR addon rather than XPoseImageCaptioner. 
@@ -13,7 +13,7 @@ There are several things to be aware of when using the XPoseImageCaptioner to ge
 3. The BLIP neural network, on which the XPoseImageCaptioner addon is based, can only output English text. Retraining the model to support languages other than English is not feasable at this time. 
 4. While the captions produced are currently very close to the state of the art for AI captioning of images, they are not always 100% accurate. Please use with caution and common sense and never in place of OCR. Also, do not rely on the output for dangerous or high-risk situations. 
 5. Currently, XPoseImageCaptioner works for websites that don't require a login. For example, the public pages of organizations such as [Guiding Eyes for the Blind](https://www.guidingeyes.org/) or [CNN](https://www.cnn.com/). Pages that require a login, such as Facebook or Twitter, are not yet supported because the addon must download an image from the web site independantly to caption it and can't do so if a login is required. As a workaround, any image from sites requiring a login could be downloaded to the local machine and captioned using the addon in File Explorer. 
-6. XPoseImageCaptioner only works on FireFox when an image does not have ALT text. FireFox does not provide a direct link to an image file to a screen reader if an image has ALT text. Without this information, the addon can't download the image for the AI to caption. Chrome and Microsoft Edge do not have this limitation, and work regardless of whether an image has ALT text or not. 
+6. Full Firefox support for XPoseImageCaptioner requires FireFox version 116 or later. 
 
 
 

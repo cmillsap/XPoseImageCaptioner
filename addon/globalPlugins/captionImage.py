@@ -23,11 +23,18 @@ from comtypes.client import CreateObject as COMCreate
 from comtypes.gen.ISimpleDOM import ISimpleDOMDocument
 import controlTypes
 import subprocess
+import addonHandler
+
+ADDON_SUMMARY = addonHandler.getCodeAddon().manifest["summary"]
 
 
 class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 
-	@script(gesture="kb:NVDA+x")
+	@script(
+		# Translators: message presented in input help mode, when user presses the shortcut keys for this addon.
+		description=_('Describe an image with {name}').format(name=ADDON_SUMMARY),
+		gesture="kb:NVDA+x",
+	)
 	def script_captionPhotograph(self, gesture):
 		wx.InitAllImageHandlers()
 		filename = self.get_selected_file()

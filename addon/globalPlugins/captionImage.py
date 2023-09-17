@@ -46,13 +46,13 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			if (currentObject is not None): 
 				name = currentObject._get_name()
 				roleName = currentObject._get_roleText()
-				log.info(f'Not explorer, name is {name} with role {roleName}')
-				log.info(f'object details {currentObject}')
+				log.debug(f'Not explorer, name is {name} with role {roleName}')
+				log.debug(f'object details {currentObject}')
 				finalAttributes = currentObject._get_IA2Attributes()
 				if 'tag' in finalAttributes:
 					if 'src' in finalAttributes: 
 						imagefilename = finalAttributes['src']
-						log.info(f'image name is {imagefilename}')
+						log.debug(f'image name is {imagefilename}')
 						urlComponents = urlparse(imagefilename)
 						if (urlComponents.netloc == ""):
 							navUrl = self.get_url_from_nav_object()
@@ -60,7 +60,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 							extension =  urlComponents.path[-4:].lower()
 							if (extension.endswith(self.image_extensions) == True):
 								finalUrl = navUrlcomponents._replace(path = urlComponents.path).geturl() 
-								log.info(f'final url = {finalUrl}')
+								log.debug(f'final url = {finalUrl}')
 								tmpFile = self.getTempFileName(finalUrl)
 								self.captionImageURL(finalUrl, tmpFile)
 								return 
@@ -69,37 +69,37 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 						else: 
 							urlImgFile = urlComponents.path 
 							extension = urlImgFile[-4:].lower()
-							log.info(f'file name is {urlImgFile}')
+							log.debug(f'file name is {urlImgFile}')
 							serverpath, imgFile = os.path.split(urlImgFile)
-							log.info(f'simple file name is {imgFile}')
+							log.debug(f'simple file name is {imgFile}')
 							tempFile = tempfile.gettempdir() + '\\' + imgFile
-							log.info(f'temp file name is {tempFile}')
+							log.debug(f'temp file name is {tempFile}')
 							if (extension.endswith(self.image_extensions) == True):
 								# valid image. see if image captioning is possible. 
 								if (urlComponents.netloc != ""): 
 									# url contains full text so not relative. Load and send to cpationing 
 									netloc = urlComponents.netloc
-									log.info(f'netloc = {netloc}')
-									log.info(f'image file name {imagefilename}')
+									log.debug(f'netloc = {netloc}')
+									log.debug(f'image file name {imagefilename}')
 									self.captionImageURL(imagefilename, tempFile)
 									return 			
 					else: 
 						for key, value in finalAttributes.items():
-							log.info(key+" "+ str(value))
+							log.debug(key+" "+ str(value))
 							url2 = self.get_url_from_nav_object()
-						log.info(f'src property not present. ALT tag in Firefox {url2}')
+						log.debug(f'src property not present. ALT tag in Firefox {url2}')
 						navObj = api.getNavigatorObject()
 
 				else:
-					log.info('img property not present. ')
+					log.debug('img property not present. ')
 			
     
 	def getTempFileName(self, imgUrl):
 		urlComponents = urlparse(imgUrl)
 		urlImgFile = urlComponents.path 
-		log.info(f'file name is {urlImgFile}')
+		log.debug(f'file name is {urlImgFile}')
 		serverpath, imgFile = os.path.split(urlImgFile)
-		log.info(f'simple file name is {imgFile}')
+		log.debug(f'simple file name is {imgFile}')
 		tempFile = tempfile.gettempdir() + '\\' + imgFile
 		return tempFile
 	
@@ -168,7 +168,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			caption = caption.decode("utf-8")
 			self.send_response_from_client(self.commandMap, 0)#client has no more traffic 
 			self.send_response_from_server(self.commandMap, 0)
-			log.info(f'The image size is {width} by {height} and uses {len(imgBytes)} bytes of memory. Caption: {caption}')
+			log.debug(f'The image size is {width} by {height} and uses {len(imgBytes)} bytes of memory. Caption: {caption}')
 			ui.browseableMessage(f"caption : {caption}", title='Captioned image', isHtml=False)
 	
 	def captionImageURL(self, url, tempFileName):
@@ -200,12 +200,12 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			count = validClientBytes.count(readVal); 
 			if (count > 0): 
 				foundValue = True 
-				log.info(f'received {readVal}')
+				log.debug(f'received {readVal}')
 				return readVal    
 	
 	def send_response_from_server(self, map, commandByte):
 		map[self.server_message_offset] = commandByte 
-		log.info(f'sent {commandByte}')
+		log.debug(f'sent {commandByte}')
 	
 	def set_server_status(self, map, statusValue): 
 		map[self.server_status_offset] = statusValue 
@@ -222,7 +222,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 
 	def send_response_from_client(self, map, commandByte):
 		map[self.client_message_offset] = commandByte 
-		log.info(f'sent {commandByte}')
+		log.debug(f'sent {commandByte}')
 
 	def get_selected_file_explorer(self, obj=None):
 		if obj is None: 
@@ -306,10 +306,10 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		obj = api.getNavigatorObject()
 		try:
 			URL = obj.treeInterceptor.documentConstantIdentifier
-			log.info("Masked  : " + URL)
+			log.debug("Masked  : " + URL)
 			URL = urllib.parse.unquote(URL)
-			log.info("Unmasked: " + URL)
+			log.debug("Unmasked: " + URL)
 		except:
-			log.info("URL not found in get_url_from_nav_object")
+			log.debug("URL not found in get_url_from_nav_object")
 			return None 
 		return URL 

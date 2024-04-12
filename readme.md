@@ -21,8 +21,8 @@ Incorporates the BLIP neural network and supporting code from the paper
 __BLIP: Bootstrapping Language-Image Pre-training for Unified Vision-Language Understanding and Generation__ by Junan Li et al (https://arxiv.org/abs/2201.12086)
 
 
-XPoseImageCaptioner &copy; 2023 Christopher Millsap, All Rights Reserved. Distributed under the **BSD 3 Clause License**. This addon is not affiliated with or endorsed by Salesforce.com 
+XPoseImageCaptioner &copy; 2024 Christopher Millsap, All Rights Reserved. Distributed under the **BSD 3 Clause License**. This addon is not affiliated with or endorsed by Salesforce.com 
 
-Uses the BLIP neural network and supporting code. &copy; 2023 SalesForce.com, All Rights Reserved. Distributed under the **BSD 3 Clause License**. 
+Uses the BLIP neural network and supporting code. &copy; 2024 SalesForce.com, All Rights Reserved. Distributed under the **BSD 3 Clause License**. 
 
 See License.txt for full details. 

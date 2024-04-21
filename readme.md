@@ -2,8 +2,8 @@
 ----------
 ## Overview 
 This addon allows for the AI captioning of JPEG and PNG images from Windows File Explorer,
-Microsoft Edge, Google Chrome, and Firefox. 
-First, select an image with the navigation cursor, then press NVDA+x to activate the addon. The addon will say "Captioning, please wait" as the AI captions the image. Thia process will take from one to five seconds depending on your machine's CPU speed. A window will open after the AI completes the caption showing the text of the caption and the caption text will be read. You can dismiss the caption window by pressing Escape. 
+Microsoft Edge, Google Chrome, and Firefox. It does all inference on the user's local machine, rather than relying on a remote server to caption the image. 
+To use, first select an image with the navigation cursor, then press NVDA+x to activate the addon. The addon will say "Captioning, please wait" as the AI captions the image. Thia process will take from one to five seconds depending on your machine's CPU speed. A window will open after the AI completes the caption showing the text of the caption and the caption text will be read. You can dismiss the caption window by pressing Escape. 
 
 ## Getting the most out of XPoseImage Captioner
 There are several things to be aware of when using the XPoseImageCaptioner to get the best results: 
